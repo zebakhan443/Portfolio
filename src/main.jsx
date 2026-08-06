@@ -1,22 +1,26 @@
-import { StrictMode, useState } from "react";
+import { StrictMode, useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 import "./styles.css";
 
-const portrait =
-  "https://images.unsplash.com/photo-1758685848006-1bc450061624?auto=format&fit=crop&w=1100&q=85";
-const classroom =
-  "https://images.unsplash.com/photo-1577896851231-70ef18881754?auto=format&fit=crop&w=1200&q=85";
-const board =
-  "https://images.unsplash.com/photo-1635372722656-389f87a941b7?auto=format&fit=crop&w=1200&q=85";
+const images = {
+  portrait:
+    "https://images.unsplash.com/photo-1758685848006-1bc450061624?auto=format&fit=crop&w=1100&q=85",
+  board:
+    "https://images.unsplash.com/photo-1635372722656-389f87a941b7?auto=format&fit=crop&w=1200&q=85",
+  classroom:
+    "https://images.unsplash.com/photo-1577896851231-70ef18881754?auto=format&fit=crop&w=1200&q=85",
+  collab:
+    "https://images.unsplash.com/photo-1588075592405-d3d4f0846961?auto=format&fit=crop&w=1200&q=85",
+};
 const equations = [
-  "π = 3.14159",
-  "φ = 1.61803",
+  "pi = 3.14159",
+  "phi = 1.61803",
   "e = 2.71828",
   "Mathematics is the music of reason",
-  "∑",
-  "√2",
-  "∞",
-  "a² + b² = c²",
+  "sum",
+  "root 2",
+  "infinity",
+  "a2 + b2 = c2",
 ];
 
 function Ribbon() {
@@ -26,77 +30,110 @@ function Ribbon() {
         {[...equations, ...equations].map((item, i) => (
           <span key={i}>
             {item}
-            <b>✦</b>
+            <b>*</b>
           </span>
         ))}
       </div>
     </div>
   );
 }
-function Label({ no, children }) {
+function Label({ index, children }) {
   return (
-    <div className="label">
-      <b>{no}</b>
-      <i></i>
+    <div className="label reveal">
+      <b>{index}</b>
+      <i />
       <span>{children}</span>
     </div>
   );
 }
 
 function App() {
-  const [hover, setHover] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) =>
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("is-visible");
+            observer.unobserve(entry.target);
+          }
+        }),
+      { threshold: 0.12 },
+    );
+    document.querySelectorAll(".reveal").forEach((el) => observer.observe(el));
+    return () => observer.disconnect();
+  }, []);
+  const closeMenu = () => setMenuOpen(false);
   return (
     <main>
       <header className="nav">
         <a href="#top" className="wordmark">
-          ZK<span className="caret">+</span>
+          Zeba Khan<span>+</span>
         </a>
-        <nav>
-          <a href="#about">About</a>
-          <a href="#skills">Expertise</a>
-          <a href="#journey">Journey</a>
-          <a href="#contact">Contact ↘</a>
+        <button
+          className="menu"
+          onClick={() => setMenuOpen(!menuOpen)}
+          aria-label="Toggle menu"
+        >
+          {menuOpen ? "x" : "menu"}
+        </button>
+        <nav className={menuOpen ? "open" : ""}>
+          <a onClick={closeMenu} href="#about">
+            About
+          </a>
+          <a onClick={closeMenu} href="#journey">
+            Journey
+          </a>
+          <a onClick={closeMenu} href="#skills">
+            Skills
+          </a>
+          <a onClick={closeMenu} href="#contact">
+            Contact &#8599;
+          </a>
         </nav>
       </header>
       <section id="top" className="hero grid-bg">
         <div className="geometry">
-          <i></i>
-          <i></i>
-          <i></i>
+          <i />
+          <i />
+          <i />
         </div>
         <div className="hero-inner">
-          <div className="hero-copy">
-            <p className="kicker">Primary Mathematics Educator · Est. 2018</p>
+          <div className="hero-copy hero-enter">
+            <p className="kicker">
+              Primary Mathematics Educator &middot; Est. 2018
+            </p>
             <h1>
               Zeba
               <br />
               <em>Khan</em>
             </h1>
             <p className="intro">
-              Shaping curious, logical young minds —<br />
+              Shaping curious, logical young minds &mdash;
+              <br />
               one theorem, one question, one child at a time.
             </p>
             <a className="cta" href="#contact">
-              Get in touch <span>↘</span>
+              Get in touch <span>&#8599;</span>
             </a>
           </div>
-          <figure className="portrait">
-            <img src={portrait} alt="Zeba Khan, mathematics educator" />
+          <figure className="portrait hero-enter">
+            <img src={images.portrait} alt="Zeba Khan, mathematics educator" />
+            <figcaption>Fig 1.0 &mdash; Replace with your photo</figcaption>
           </figure>
         </div>
       </section>
       <Ribbon />
-
       <section id="about" className="section manifesto">
-        <Label no="( 01 )">Teaching manifesto</Label>
-        <div className="manifesto-grid">
+        <Label index="( 01 )">Teaching manifesto</Label>
+        <div className="manifesto-grid reveal">
           <div>
             <h2>
-              Every child
+              What I stand
               <br />
-              deserves to <em>feel</em>
+              for at the front
               <br />
-              brilliant.
+              of <em>the class.</em>
             </h2>
             <p className="muted">
               A classroom where questions matter more than quick answers.
@@ -104,71 +141,45 @@ function App() {
           </div>
           <div className="manifesto-copy">
             <p>
-              I believe mathematics isn’t a talent reserved for a few — it’s a
-              language every child can speak. My classroom is built on patience,
-              curiosity and the quiet thrill of a problem finally solved.
+              <strong>Every child can love numbers.</strong>
+              <br />I believe mathematics isn't a talent reserved for a few
+              &mdash; it's a language every child can speak. My classroom is
+              built on patience, curiosity and the quiet thrill of a problem
+              finally solved.
             </p>
             <p>
-              The equations change year to year, but my true goal never does —
-              to send each student forward believing they are capable, curious
-              and unafraid of a hard question.
+              <strong>Concepts before formulas.</strong>
+              <br />
+              Before a single formula is memorised, my students learn to see the
+              why. We build intuition with stories, shapes and play, so the
+              logic feels discovered rather than dictated.
+            </p>
+            <p>
+              <strong>Confidence is the real subject.</strong>
+              <br />
+              The equations change year to year, but my true goal never does
+              &mdash; to send each student forward believing they are capable,
+              curious and unafraid of a hard question.
             </p>
             <a href="#contact" className="underlined">
-              My teaching philosophy ↘
+              My teaching philosophy &#8599;
             </a>
           </div>
         </div>
-        <div className="image-pair">
-          <img src={board} alt="Equations on a classroom blackboard" />
+        <div className="image-pair reveal">
+          <img
+            src={images.board}
+            alt="Blackboard with mathematical equations"
+          />
           <div className="image-caption">
-            “The beautiful thing about learning is that nobody can take it away
-            from you.”<small>— B.B. King</small>
+            The beautiful thing about learning is that nobody can take it away
+            from you.<small>&mdash; B.B. King</small>
           </div>
         </div>
       </section>
-
-      <section id="skills" className="section expertise grid-bg">
-        <Label no="( 02 )">What I bring to the classroom</Label>
-        <h2>
-          A thoughtful approach
-          <br />
-          to <em>every equation.</em>
-        </h2>
-        <div className="skill-grid">
-          {[
-            [
-              "01",
-              "Foundations first",
-              "Making mental math and place value second nature for young learners.",
-            ],
-            [
-              "02",
-              "Curriculum design",
-              "Structured, age-appropriate lesson plans that scaffold every concept.",
-            ],
-            [
-              "03",
-              "Playful problem solving",
-              "Teaching the joy of a puzzle — patience over panic.",
-            ],
-            [
-              "04",
-              "Storytelling in lessons",
-              "Turning abstract maths into stories children want to follow.",
-            ],
-          ].map(([no, title, text]) => (
-            <article key={no}>
-              <small>{no}</small>
-              <h3>{title}</h3>
-              <p>{text}</p>
-            </article>
-          ))}
-        </div>
-      </section>
-
       <section id="journey" className="section journey">
-        <Label no="( 03 )">The journey so far</Label>
-        <div className="journey-head">
+        <Label index="( 02 )">The journey</Label>
+        <div className="journey-head reveal">
           <h2>
             From student of
             <br />
@@ -182,38 +193,77 @@ function App() {
           <p>Every chapter has made the classroom feel more like home.</p>
         </div>
         <div className="timeline">
-          <article>
-            <span>2014—2018</span>
-            <h3>Bachelor of Education</h3>
-            <p>
-              Completed my degree under Rajasthan Technical University, building
-              the analytical foundation that shapes how I teach problem-solving
-              today.
-            </p>
-          </article>
-          <article>
-            <span>2018—2021</span>
-            <h3>Assistant Teacher — Mathematics</h3>
-            <p>
-              Began my teaching journey with primary students, translating
-              rigorous logic into playful, age-appropriate learning.
-            </p>
-          </article>
-          <article>
-            <span>2021—Now</span>
-            <h3>Mathematics Educator</h3>
-            <p>
-              Continuing to grow as an educator — refining curriculum, mentoring
-              young learners and collaborating with a wonderful team of
-              teachers.
-            </p>
-          </article>
+          {[
+            [
+              "2014 - 2018",
+              "Graduated - B.Tech",
+              "Completed my degree under Rajasthan Technical University, building the analytical foundation that shapes how I teach problem-solving today.",
+            ],
+            [
+              "2018 - 2021",
+              "Assistant Teacher - Mathematics",
+              "Began my teaching journey with primary students, translating rigorous logic into playful, age-appropriate learning.",
+            ],
+            [
+              "2021 - Now",
+              "Mathematics Educator",
+              "Continuing to grow as an educator - refining curriculum, mentoring young learners and collaborating with a wonderful team of teachers.",
+            ],
+          ].map(([year, title, detail]) => (
+            <article className="reveal" key={year}>
+              <span>{year}</span>
+              <h3>{title}</h3>
+              <p>{detail}</p>
+            </article>
+          ))}
         </div>
       </section>
-
+      <section id="skills" className="section expertise grid-bg">
+        <Label index="( 03 )">Skills & talents</Label>
+        <h2 className="reveal">
+          A toolkit built for
+          <br />
+          <em>curious minds.</em>
+        </h2>
+        <div className="skill-grid">
+          {[
+            [
+              "01",
+              "Arithmetic & Number Sense",
+              "Making mental math and place value second nature for young learners.",
+            ],
+            [
+              "02",
+              "Geometry",
+              "Shapes, symmetry & spatial reasoning through hands-on play.",
+            ],
+            [
+              "03",
+              "Curriculum Design",
+              "Structured, age-appropriate lesson plans that scaffold every concept.",
+            ],
+            [
+              "04",
+              "Problem Solving",
+              "Teaching the joy of a puzzle - patience over panic.",
+            ],
+            [
+              "05",
+              "Creative Explanations",
+              "Stories, analogies and visuals that make the abstract click.",
+            ],
+          ].map(([no, title, text]) => (
+            <article className="reveal" key={no}>
+              <small>{no}</small>
+              <h3>{title}</h3>
+              <p>{text}</p>
+            </article>
+          ))}
+        </div>
+      </section>
       <section id="work" className="section achievements">
-        <Label no="( 04 )">Achievements & collaboration</Label>
-        <h2>
+        <Label index="( 04 )">Achievements & collaboration</Label>
+        <h2 className="reveal">
           Great teaching is a<br />
           <em>team sport.</em>
         </h2>
@@ -223,37 +273,41 @@ function App() {
             ["500+", "Students mentored through their number journey"],
             ["Top", "Recognised for engaging, concept-first lessons"],
           ].map(([big, copy]) => (
-            <div key={big}>
-              <b>✦</b>
+            <div className="reveal" key={big}>
+              <b>*</b>
               <strong>{big}</strong>
               <p>{copy}</p>
             </div>
           ))}
         </div>
-        <img
-          className="classroom"
-          src={classroom}
-          alt="A teacher in a bright primary classroom"
-        />
+        <div className="collaboration reveal">
+          <img src={images.classroom} alt="Teacher helping children learn" />
+          <img
+            src={images.collab}
+            alt="Teachers collaborating in a classroom"
+          />
+        </div>
       </section>
       <section id="contact" className="contact">
-        <Label no="( 05 )">Let’s connect</Label>
-        <h2>
-          Let’s make
+        <Label index="( 05 )">Get in touch</Label>
+        <h2 className="reveal">
+          Let's make
           <br />
           maths <em>matter.</em>
         </h2>
-        <p>
-          Whether it’s a collaboration, a workshop, or a conversation about
-          teaching mathematics to young minds — I’d love to hear from you.
+        <p className="reveal">
+          Whether it's a collaboration, a workshop, or a conversation about
+          teaching mathematics to young minds &mdash; I'd love to hear from you.
         </p>
-        <a href="mailto:Zebakhan443@gmail.com">Zebakhan443@gmail.com ↗</a>
+        <a className="reveal" href="mailto:Zebakhan443@gmail.com">
+          Zebakhan443@gmail.com &#8599;
+        </a>
       </section>
       <Ribbon />
       <footer>
-        <span>© 2026 ZEBA KHAN</span>
-        <span>PRIMARY MATHEMATICS EDUCATOR AT LKSEC · NIMBAHERA</span>
-        <a href="#top">Back to top ↑</a>
+        <span>&copy; 2026 ZEBA KHAN</span>
+        <span>Primary Mathematics Educator at LKSEC &middot; Nimbahera</span>
+        <a href="#top">Back to top &#8593;</a>
       </footer>
     </main>
   );
