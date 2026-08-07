@@ -1,10 +1,10 @@
 import { StrictMode, useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
+import { BrowserRouter, Link, Route, Routes } from "react-router-dom";
 import "./styles.css";
 
 const images = {
-  portrait:
-    "https://images.unsplash.com/photo-1758685848006-1bc450061624?auto=format&fit=crop&w=1100&q=85",
+  portrait: "/profile2.jpeg",
   board:
     "https://images.unsplash.com/photo-1635372722656-389f87a941b7?auto=format&fit=crop&w=1200&q=85",
   classroom:
@@ -47,7 +47,7 @@ function Label({ index, children }) {
   );
 }
 
-function App() {
+function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -87,6 +87,9 @@ function App() {
           <a onClick={closeMenu} href="#skills">
             Skills
           </a>
+          <Link onClick={closeMenu} to="/gallery">
+            Activities
+          </Link>
           <a onClick={closeMenu} href="#contact">
             Contact &#8599;
           </a>
@@ -119,7 +122,6 @@ function App() {
           </div>
           <figure className="portrait hero-enter">
             <img src={images.portrait} alt="Zeba Khan, mathematics educator" />
-            <figcaption>Fig 1.0 &mdash; Replace with your photo</figcaption>
           </figure>
         </div>
       </section>
@@ -195,7 +197,7 @@ function App() {
         <div className="timeline">
           {[
             [
-              "2014 - 2018",
+              "2012 - 2016",
               "Graduated - B.Tech",
               "Completed my degree under Rajasthan Technical University, building the analytical foundation that shapes how I teach problem-solving today.",
             ],
@@ -269,7 +271,7 @@ function App() {
         </h2>
         <div className="stats">
           {[
-            ["6+", "Years shaping primary mathematicians"],
+            ["7+", "Years shaping primary mathematicians"],
             ["500+", "Students mentored through their number journey"],
             ["Top", "Recognised for engaging, concept-first lessons"],
           ].map(([big, copy]) => (
@@ -312,8 +314,178 @@ function App() {
     </main>
   );
 }
+
+const galleryItems = [
+  {
+    src: "/gallery/a2.jpeg",
+    title: "Learning through play",
+    category: "Digital learning workshop",
+    position: "center 36%",
+  },
+  {
+    src: "/gallery/c3.jpeg",
+    title: "Patterns in practice",
+    category: "Computational thinking",
+    position: "center 45%",
+  },
+  {
+    src: "/gallery/c5.jpeg",
+    title: "Number detectives",
+    category: "Collaborative maths",
+    position: "center 48%",
+  },
+  {
+    src: "/gallery/Play2.jpeg",
+    title: "Learning beyond the classroom",
+    category: "Hands-on activity",
+    position: "center center",
+  },
+  {
+    src: "/gallery/c6.jpeg",
+    title: "Thinking together",
+    category: "Peer learning",
+    position: "center 42%",
+  },
+  {
+    src: "/gallery/Play3.jpeg",
+    title: "A lesson in motion",
+    category: "Outdoor exploration",
+    position: "center center",
+  },
+  {
+    src: "/gallery/C2.jpeg",
+    title: "Finding the pattern",
+    category: "Student-led learning",
+    position: "center 46%",
+  },
+  {
+    src: "/gallery/Stud3.jpeg",
+    title: "Big questions",
+    category: "Computational thinking",
+    position: "center center",
+  },
+];
+
+function Gallery() {
+  const [active, setActive] = useState(null);
+  useEffect(() => {
+    const onKeyDown = (event) => event.key === "Escape" && setActive(null);
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, []);
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) =>
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("is-visible");
+            observer.unobserve(entry.target);
+          }
+        }),
+      { threshold: 0.08 },
+    );
+    document
+      .querySelectorAll(".gallery-page .reveal")
+      .forEach((el) => observer.observe(el));
+    return () => observer.disconnect();
+  }, []);
+  return (
+    <main className="gallery-page">
+      <header className="nav gallery-nav">
+        <Link to="/" className="wordmark">
+          Zeba Khan<span>+</span>
+        </Link>
+        <Link className="gallery-back" to="/">
+          &#8592; Back to portfolio
+        </Link>
+      </header>
+      <section className="gallery-hero grid-bg">
+        <p className="kicker">A glimpse inside the classroom</p>
+        <h1>
+          Learning in
+          <br />
+          <em>action.</em>
+        </h1>
+        <p>
+          Small discoveries, shared questions and the joy of figuring things out
+          — together.
+        </p>
+        <span className="gallery-count">
+          01—{String(galleryItems.length).padStart(2, "0")}
+        </span>
+      </section>
+      <section className="gallery-content">
+        <div className="gallery-intro">
+          <Label index="( 06 )">Activity gallery</Label>
+          <p>
+            Each activity is designed to make mathematical thinking visible,
+            social and memorable.
+          </p>
+        </div>
+        <div className="gallery-grid">
+          {galleryItems.map((item, index) => (
+            <button
+              className="gallery-card reveal"
+              key={item.src}
+              onClick={() => setActive(index)}
+            >
+              <img
+                src={item.src}
+                alt={item.title}
+                style={{ objectPosition: item.position }}
+              />
+              <span className="gallery-overlay">
+                <small>{item.category}</small>
+                <b>{item.title}</b>
+                <i>View &#8599;</i>
+              </span>
+            </button>
+          ))}
+          <article className="gallery-video reveal">
+            <video controls preload="metadata" poster="/gallery/Play2.jpeg">
+              <source src="/gallery/C1.mp4" type="video/mp4" />
+            </video>
+            <p>
+              <small>Classroom moments</small>See learning come alive.
+            </p>
+          </article>
+        </div>
+      </section>
+      {active !== null && (
+        <div
+          className="lightbox"
+          role="dialog"
+          aria-modal="true"
+          aria-label={galleryItems[active].title}
+          onClick={() => setActive(null)}
+        >
+          <button aria-label="Close image" onClick={() => setActive(null)}>
+            ×
+          </button>
+          <img
+            src={galleryItems[active].src}
+            alt={galleryItems[active].title}
+            onClick={(e) => e.stopPropagation()}
+          />
+          <p>{galleryItems[active].title}</p>
+        </div>
+      )}
+    </main>
+  );
+}
+
+function App() {
+  return (
+    <Routes>
+      <Route path="/" element={<Home />} />
+      <Route path="/gallery" element={<Gallery />} />
+    </Routes>
+  );
+}
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <App />
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
   </StrictMode>,
 );
